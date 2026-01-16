@@ -8,7 +8,8 @@ export type MbtiType =
 //   The payload to send to the go backend
   export interface QuizPayload {
     score_type: MbtiType; 
-    final_score: number 
+    final_score: number,
+    answers: String[], 
   }
 
 //   Backend Response
@@ -23,3 +24,4 @@ export type MbtiType =
     error: Boolean 
     message: String
   }
+  

@@ -1,5 +1,5 @@
 import { MbtiType } from '@/types/quiz';
-
+import { Dispatch, SetStateAction } from 'react';
 
 interface QuestionCardProps {
     question: string, 
@@ -9,7 +9,10 @@ interface QuestionCardProps {
     onNext: () => void; 
     isLast: boolean; 
     loading: boolean; 
+    answerText: string; 
+    setAnswerText: Dispatch<SetStateAction<string>>; 
 }
+
 
 export default function QuestionCard({
     question, 
@@ -18,7 +21,9 @@ export default function QuestionCard({
     targetType, 
     onNext, 
     isLast, 
-    loading
+    loading, 
+    answerText, 
+    setAnswerText
 }: QuestionCardProps) {
     const progressPercent = (step/totalSteps) * 100 
 
@@ -55,7 +60,7 @@ export default function QuestionCard({
             </div>
 
             {/* Input Area */}
-            <textarea placeholder="Type your character's response here..." className="w-full h-10 p-4 border-2 border-gray-100 rounded-xl focus:border-blue-500 focus:ring-blue-50 outline-none transition-all resize-none text-gray-700"></textarea>
+            <input value={answerText} onChange={e => setAnswerText(e.target.value)} placeholder="Type your character's response here..." className="w-full h-10 p-4 border-2 border-gray-100 rounded-xl focus:border-blue-500 focus:ring-blue-50 outline-none transition-all resize-none text-gray-700"></input>
 
 
             {/* Navigation */}

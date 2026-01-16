@@ -1,0 +1,16 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../lib/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model QuizResult {
+  id           String    @id @default(cuid())
+  score_type   String
+  final_score  Int
+  answers      Json?
+  createdAt    DateTime  @default(now())
+}

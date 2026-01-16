@@ -1,13 +1,16 @@
 'use client'
 
 import {useState} from 'react'
+
 import { MbtiType } from '@/types/quiz';
-import { postSingleResult } from '@/lib/api';
+
 import StartScreen from './StartScreen';
 import ResultView from './ResultView';
 import QuestionCard from './QuestionCard';
 
-type GameState = 'START'|'QUIZ' |'RESULT'
+import { submitToBackend } from '@/lib/api';
+
+import useQuizSession from '@/hooks/useQuizSession';
 
 const QUESTIONS = [
     "How do you feel about large social gatherings?",
@@ -22,51 +25,51 @@ const QUESTIONS = [
     "Do you value efficiency over harmony?"
   ];
 
-
 export default function QuizContainer () {
-    const [gameState, setGameState] = useState<GameState>('START')
-
-    const [assignedType, setAssignedType] = useState<MbtiType>('INTJ')
-
-    const [currentStep, setCurrentStep] = useState(0)
-
-    const [isSubmitting, setIsSubmitting] = useState(false)
-
-    const [finalScore, setFinalScore] = useState<number | null>(null) 
+    const {state, actions} = useQuizSession() 
 
     const startChallenge = () => {
-        setAssignedType('INTJ')
-        setCurrentStep(0)
-        setFinalScore(null) 
-        setGameState('QUIZ')
+        actions.resetSession()
     }
 
     const handleNext = () => {
-        if (currentStep < 9) {
-            setCurrentStep(prev => prev + 1) 
+        if (!state.answerText.trim()) {
+          alert('Empty field')
+          return 
+        }
+
+
+        const newAnswers = [...state.answers, state.answerText] 
+        actions.setAnswers(newAnswers)  
+        console.log(newAnswers) 
+
+        actions.setAnswerText('')
+        if (state.currentStep < 9) {
+            actions.setCurrentStep(prev => prev + 1) 
         } else {
-            submitToBackend() 
+            submitData(newAnswers) 
         }
     }
 
-    const submitToBackend = async () => {
-        setIsSubmitting(true)
+    const submitData = async (newAnswers: String[]) => {
+        actions.setIsSubmitting(true)
         const calculateScore = Math.floor(Math.random() * 100)
 
         const payload = {
-            score_type: assignedType, 
-            final_score: calculateScore
+            score_type: state.assignedType, 
+            final_score: calculateScore, 
+            answers: newAnswers
         }
     
 
         try {
-            await postSingleResult(payload) 
-            setGameState('RESULT')
+            const response = await submitToBackend(payload) 
+            if(response) actions.setGameState('RESULT')
         } catch(e) {
             console.error("Submission Failed", e)
             alert('There has been an error with sending you data. Please stay tuned till fixed')
         } finally {
-            setIsSubmitting(false)
+            actions.setIsSubmitting(false)
         }
     }
 
@@ -75,29 +78,31 @@ export default function QuizContainer () {
               <div className="w-full max-w-xl bg-white rounded-2xl shadow-xl p-8">
                 
                 {/* 1. START screen */}
-                {gameState === 'START' && (
+                {state.gameState === 'START' && (
                   <StartScreen onStart={startChallenge} />
                 )}
           
                 {/* 2. QUIZ screen */}
-                {gameState === 'QUIZ' && (
+                {state.gameState === 'QUIZ' && (
                   <QuestionCard 
-                    question={QUESTIONS[currentStep]}
-                    step={currentStep + 1}
+                    question={QUESTIONS[state.currentStep]}
+                    step={state.currentStep + 1}
                     totalSteps={QUESTIONS.length}
-                    targetType={assignedType}
+                    targetType={state.assignedType}
                     onNext={handleNext} // The logic we just wrote!
-                    isLast={currentStep === QUESTIONS.length - 1}
-                    loading={isSubmitting}
+                    isLast={state.currentStep === QUESTIONS.length - 1}
+                    loading={state.isSubmitting}
+                    answerText = {state.answerText}
+                    setAnswerText = {actions.setAnswerText} 
                   />
                 )}
           
                 {/* 3. RESULT screen */}
-                {gameState === 'RESULT' && (
+                {state.gameState === 'RESULT' && (
                   <ResultView 
-                    score={finalScore ?? 0} 
-                    type={assignedType}
-                    onRestart={() => setGameState('START')}
+                    score={state.finalScore ?? 0} 
+                    type={state.assignedType}
+                    onRestart={() => actions.setGameState('START')}
                   />
                 )}
           
