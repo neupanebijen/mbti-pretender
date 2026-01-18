@@ -1,31 +1,32 @@
-import { MbtiType } from '@/types/quiz';
+
+import { MbtiCode } from '@/types/mbti-definitions';
 import { Dispatch, SetStateAction } from 'react';
 
 interface QuestionCardProps {
-    question: string, 
-    step: number, 
-    totalSteps: number; 
-    targetType: MbtiType; 
-    onNext: () => void; 
-    isLast: boolean; 
-    loading: boolean; 
-    answerText: string; 
-    setAnswerText: Dispatch<SetStateAction<string>>; 
+    question: string,
+    step: number,
+    totalSteps: number;
+    targetType: MbtiCode;
+    onNext: () => void;
+    isLast: boolean;
+    loading: boolean;
+    answerText: string;
+    setAnswerText: Dispatch<SetStateAction<string>>;
 }
 
 
 export default function QuestionCard({
-    question, 
-    step, 
-    totalSteps, 
-    targetType, 
-    onNext, 
-    isLast, 
-    loading, 
-    answerText, 
+    question,
+    step,
+    totalSteps,
+    targetType,
+    onNext,
+    isLast,
+    loading,
+    answerText,
     setAnswerText
 }: QuestionCardProps) {
-    const progressPercent = (step/totalSteps) * 100 
+    const progressPercent = (step / totalSteps) * 100
 
     return (
         <div className="space-y-8 animate-in slide-in-from-bottom-4 duration-500">
@@ -37,10 +38,10 @@ export default function QuestionCard({
                     <span>{step}</span>
                 </div>
                 <div className="h-2 w-full bg-gray-100 rounded-full overflow-hidden">
-                    <div className="h-full bg-blue-600 transition-all duration-500 ease-out" style={{width:`${progressPercent}`}}>
+                    <div className="h-full bg-blue-600 transition-all duration-500 ease-out" style={{ width: `${progressPercent}` }}>
                     </div>
                 </div>
-            
+
             </div>
 
             {/* Persona Badge */}
@@ -60,18 +61,23 @@ export default function QuestionCard({
             </div>
 
             {/* Input Area */}
-            <input value={answerText} onChange={e => setAnswerText(e.target.value)} placeholder="Type your character's response here..." className="w-full h-10 p-4 border-2 border-gray-100 rounded-xl focus:border-blue-500 focus:ring-blue-50 outline-none transition-all resize-none text-gray-700"></input>
+            <form onSubmit={e => {
+                e.preventDefault()
+                onNext()
+            }}>
+                <input value={answerText} onChange={e => setAnswerText(e.target.value)} placeholder="Type your character's response here..." className="w-full h-10 p-4 border-2 border-gray-100 rounded-xl focus:border-blue-500 focus:ring-blue-50 outline-none transition-all resize-none text-gray-700"></input>
 
 
-            {/* Navigation */}
-            <button onClick={onNext} disabled={loading}  className={`w-full py-4 rounded-xl font-bold text-white transition-all flex items-center justify-center gap-2 ${loading ? 'bg-gray-400 cursor-not-allowed': 'bg-blue-600 hover:bg-blue-700 active:scale-[0.98]'}`}>
-                {loading ? (
-                    <>
-                        <span className="animate-spin text-4xl">🌀</span>
-                        Analyzing Performance....
-                    </>
-                ): (isLast ? 'Finish & See Results': 'Submit Answer')}
-            </button>
+                {/* Navigation */}
+                <button disabled={loading} className={`w-full mt-5 py-4 rounded-xl font-bold text-white transition-all flex items-center justify-center gap-2 ${loading ? 'bg-gray-400 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700 active:scale-[0.98]'}`}>
+                    {loading ? (
+                        <>
+                            <span className="animate-spin text-4xl">🌀</span>
+                            Analyzing Performance....
+                        </>
+                    ) : (isLast ? 'Finish & See Results' : 'Submit Answer')}
+                </button>
+            </form>
         </div>
     )
 } // 

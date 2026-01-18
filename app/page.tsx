@@ -1,7 +1,9 @@
-import QuizContainer from "@/components/QuizContainer"
+import { redirect } from "next/navigation"
+
 
 const App = () => {
-  return <QuizContainer /> 
+  redirect('/select-type')
+  return <></>
 
 }
 

@@ -1,16 +1,20 @@
-import { MbtiType } from "@/types/quiz";    
+'use client'
 
-interface ResultViewProps{
-    score: number; 
-    type: MbtiType; 
-    onRestart: () => void 
+import { MbtiCode } from "@/types/mbti-definitions";
+import { useRouter } from "next/navigation";
+
+interface ResultViewProps {
+    score: number;
+    type: MbtiCode;
 }
 
-export default function ResultView({score, type, onRestart}: ResultViewProps) {
+export default function ResultView({ score, type }: ResultViewProps) {
+    const router = useRouter()
+
     const getFeedback = () => {
-        if (score >= 80) return {label: "Master Pretender", color: "text-green-600", bg: "bg-green-50"}
-        if (score >= 50) return {label: "Good Effort", color: "text-blue-600", bg: "bg-blue-50"}
-        return {label: "Breaking Character", color: "text-red-600", bg: "bg-red-50"}
+        if (score >= 80) return { label: "Master Pretender", color: "text-green-600", bg: "bg-green-50" }
+        if (score >= 50) return { label: "Good Effort", color: "text-blue-600", bg: "bg-blue-50" }
+        return { label: "Breaking Character", color: "text-red-600", bg: "bg-red-50" }
     }
 
     const feedback = getFeedback()
@@ -20,7 +24,7 @@ export default function ResultView({score, type, onRestart}: ResultViewProps) {
             {/* Trophy/Status Icon */}
             <div className="flex justify-center">
                 <div className={`w-24 h-24 rounded-full flex items-center justify-center text-5xl shadow-inner ${feedback.bg}`}>
-                    {score >= 80 ? '👑': score>= 50 ? '🥈' : '🎭' }
+                    {score >= 80 ? '👑' : score >= 50 ? '🥈' : '🎭'}
                 </div>
             </div>
 
@@ -40,16 +44,16 @@ export default function ResultView({score, type, onRestart}: ResultViewProps) {
                     {feedback.label}
                 </h3>
                 <p className="text-gray-600 text-sm leading-relaxed">
-                The AI analyzed your linguistic patterns and behavioral choices.
-                You demonstrated a {score}% alignment with the core traits of the {type} personality.
+                    The AI analyzed your linguistic patterns and behavioral choices.
+                    You demonstrated a {score}% alignment with the core traits of the {type} personality.
                 </p>
             </div>
 
             {/* Action Area */}
             <div className="pt-4 space-y-3">
-                <button onClick={onRestart} className="w-full py-4 bg-black text-white rounded-xl font-bold hover:bg-gray-800 transition-all active:scale-95 shadow-lg">
-                    Try another Persona    
-                </button> 
+                <button onClick={() => router.push('/select-type')} className="w-full py-4 bg-black text-white rounded-xl font-bold hover:bg-gray-800 transition-all active:scale-95 shadow-lg">
+                    Try another Persona
+                </button>
                 <button onClick={() => window.print()} className="w-full py-2 text-gray-400 text-sm hover:text-gray-600 transition-colors">
                     Download Results (PDF)
                 </button>
