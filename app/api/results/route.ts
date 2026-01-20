@@ -4,6 +4,9 @@ import { analyzeQuizWithAI } from '@/lib/quizService';
 import { MBTI_QUESTIONS } from '@/constants/mbti';
 import { MbtiCode } from '@/types/mbti-definitions';
 
+export const maxDuration = 60
+
+
 export async function POST(request: Request) {
     try {
         const body = await request.json();
