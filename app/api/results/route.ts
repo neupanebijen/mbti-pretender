@@ -1,6 +1,8 @@
 import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
-import { randomInt } from 'crypto';
+import { analyzeQuizWithAI } from '@/lib/quizService';
+import { MBTI_QUESTIONS } from '@/constants/mbti';
+import { MbtiCode } from '@/types/mbti-definitions';
 
 export async function POST(request: Request) {
     try {
@@ -15,15 +17,24 @@ export async function POST(request: Request) {
             );
         }
 
-        const calculatedScore = calculateScore()
+        if (!(score_type in MBTI_QUESTIONS)) {
+            return NextResponse.json({ error: `Invalid MBTI code: ${score_type}` }, { status: 400 })
+        }
+
+        const officialQuestion = MBTI_QUESTIONS[score_type as MbtiCode]
+
+        const resultScores = await analyzeQuizWithAI(score_type, officialQuestion, answers)
+        const totalScore = resultScores.scores.reduce((total: number, currentValue: number) => total + currentValue)
 
         const result = await prisma.quizResult.create({
             data: {
                 score_type: score_type,
-                final_score: calculatedScore,
+                final_score: totalScore,
                 answers: answers || []
             }
         });
+
+        console.log(result)
 
         return NextResponse.json({ score: result.final_score }, { status: 201 });
     } catch (error) {
@@ -34,8 +45,4 @@ export async function POST(request: Request) {
         )
     }
 
-}
-
-const calculateScore = () => {
-    return randomInt(0, 100)
 }

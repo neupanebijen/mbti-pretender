@@ -19,6 +19,7 @@ const useQuizSession = () => {
     setAnswerText('');
     setCurrentStep(0);
     setGameState('QUIZ');
+    setAssignedType('INTJ')
     // Any other states to wipe...
   };
 

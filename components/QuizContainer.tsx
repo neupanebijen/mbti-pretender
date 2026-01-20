@@ -18,6 +18,7 @@ export default function QuizContainer({ type, questions }: QuizContainerProps) {
   const { state, actions } = useQuizSession()
   const router = useRouter()
 
+
   const handleNext = () => {
     if (!state.answerText.trim()) {
       alert('Empty field')
@@ -40,7 +41,7 @@ export default function QuizContainer({ type, questions }: QuizContainerProps) {
     actions.setIsSubmitting(true)
 
     const payload = {
-      score_type: state.assignedType,
+      score_type: type,
       answers: newAnswers
     }
 
