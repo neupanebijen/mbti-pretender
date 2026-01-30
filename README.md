@@ -1,1 +1,1 @@
-Cooperation project with a go backend. 
+Gemini integrated application. Gemini used for review user responses and generating scores. 
